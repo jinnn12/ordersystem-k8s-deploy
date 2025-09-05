@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+# pod의 이름(name)은 namespace내에서 유일해야 함
+  name: jinho-nginx
+  namespace: jinho
+# labels는 service의 라우팅 대상이 되는 이름, 같은 label이 붙은 여러 pod는 가능하다
+# service 자원의 selector.app과 일치되어야 매핑이 가능
+  labels:
+    app: jinho-nginx
+spec:
+# containers의 name은 크게 의미 없음
+  containers:
+  - name: my-nginx
+    image: nginx
+    ports:
+    - containerPort: 80

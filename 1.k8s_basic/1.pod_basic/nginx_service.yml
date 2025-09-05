@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata: 
+# pod의 이름(name)은 namespace내에서 유일해야 함
+# 클러스터 내에서 service명(name)은 url 주소로 사용된다. ex) http://jinho-service
+  name: jinho-service
+  namespace: jinho
+spec: 
+# port는 서비스 포트번호, targetPort는 pod(=container)의 포트번호
+  ports:
+  - port: 80
+    targetPort: 80
+# pod의 labels 와 일치하는 곳에 라우팅 가능
+  selector:
+    app: jinho-nginx

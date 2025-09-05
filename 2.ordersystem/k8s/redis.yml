@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: redis-deployment
+  namespace: jinho
+spec:
+# 몇대의 Pod를 띄울거냐
+  replicas: 1
+  selector:
+  # 아래의 (match)labels은 replicaset이 관리해야 할 pod를 결정하는데 사용
+    matchLabels:
+      app: jinho-redis
+  template: 
+    metadata:
+    # 서비스가 바라보기 위한 label
+      labels:
+        app: jinho-redis
+    spec:
+      containers:
+      - name: my-redis
+        image: redis
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: redis-service
+  namespace: jinho
+spec: 
+  type: ClusterIP
+# port -> 서비스의 포트 , targetPort : redis 고유의 포트
+# selector.app의 이름은 labels의 이름과 같아야 함
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: jinho-redis
