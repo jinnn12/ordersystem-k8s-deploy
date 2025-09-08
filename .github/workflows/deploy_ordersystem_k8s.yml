@@ -33,20 +33,65 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
 
-        # run -> docker build -t 이미지명:태그명 -f 도커파일위치 빌드컨텍스트위치
       - name: build and push docker image to ecr
         env:
           REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
-          REPOSITORY: jinho/ordersystem
+          REPOSITORY: jinho/apigateway
           IMAGE_TAG: latest
         run: |
           docker build \
           -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
-          -f ./2.ordersystem/Dockerfile ./2.ordersystem
+          -f ./3.msa/apiGateway/Dockerfile ./3.msa/apiGateway
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
       - name: eks kubectl apply
         run: |
-          kubectl rollout restart deployment ordersystem-deployment -n jinho
+          kubectl rollout restart deployment apigateway-depl -n jinho
+
+      - name: build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: jinho/member
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/member/Dockerfile ./3.msa/member
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: eks kubectl apply
+        run: |
+          kubectl rollout restart deployment ordering-depl -n jinho
+
+      - name: build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: jinho/ordering
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/ordering/Dockerfile ./3.msa/ordering
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: eks kubectl apply
+        run: |
+          kubectl rollout restart deployment ordering-depl -n jinho
+
+      - name: build and push docker image to ecr
+        env:
+          REGISTRY: 346903264902.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: jinho/product
+          IMAGE_TAG: latest
+        run: |
+          docker build \
+          -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+          -f ./3.msa/product/Dockerfile ./3.msa/product
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      - name: eks kubectl apply
+        run: |
+          kubectl rollout restart deployment product-depl -n jinho
+
         # kubectl apply -f ./2.ordersystem/k8s/k8s-ordersystem/depl_svc.yml
         # kubectl apply -f 적용해도 되고 안해도 된다, 이미 apply 되어 있으니 rollout만 하면 되지 않을까?

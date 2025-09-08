@@ -1,0 +1,55 @@
+server:
+  port: 8080
+
+# 유레카에게 질의하지 않는다는 로직
+eureka:
+  client:
+    enabled: false
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              # - 'http://localhost:3000'
+              - 'https://www.jinho2000.shop'
+            allowedMethods: '*'
+            allowedHeaders: '*'
+            allowedCredentials: true
+      routes:
+        - id: member-service
+          predicates:
+            - Path=/member-service/**
+          filters:
+            # 첫번째 접두어를 제거한 후에 member-service 서버로 http요청 전달
+            - StripPrefix=1
+          # eureka에 등록된 등록된 이름이 아닌, k8s의 서비스명을 배포 시 사용
+          # uri: lb://member-service
+          uri: http://member-service
+        - id: ordering-service
+          predicates:
+            - Path=/ordering-service/**
+          filters:
+            - StripPrefix=1
+          uri: http://ordering-service
+        - id: product-service
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - StripPrefix=1
+          uri: http://product-service
+
+
+jwt:
+  expirationAt: 1000
+  #  beyondaccesstokensecretkeybeyondaccesstokensecretkeybeyondaccesstokensecretkey
+  secretKeyAt: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
+  expirationRt: 10000
+  secretKeyRt: YmV5b25kYWNjZXNzdG9rZW5zZWNyZXRrZXliZXlvbmRhY2Nlc3N0b2tlbnNlY3JldGtleWJleW9uZGFjY2Vzc3Rva2Vuc2VjcmV0a2V5
