@@ -22,7 +22,7 @@ public class JwtAuthFilter implements GlobalFilter {
             "/member/create",
             "/member/doLogin",
             "/member/refresh-at",
-            "/member/health",
+            "/health",
             "/product/list"
     );
 
